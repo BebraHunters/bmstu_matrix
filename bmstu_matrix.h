@@ -67,12 +67,13 @@ namespace bmstu {
 //            return *this;
 //        }
 
-        friend std::ostream &operator<<(std::ostream &ovs, const bmstu::matrix<T> &obj) {
+        template<class S>
+        friend S &operator<<(S &ovs, const bmstu::matrix<T> &obj) {
             for (size_t i = 0; i < obj.rows_; ++i) {
                 for (size_t j = 0; j < obj.columns_; ++j) {
                     ovs << obj(i, j) << " ";
                 }
-                std::cout << "\r\n";
+                ovs << "\r\n";
             }
             return ovs;
         }
@@ -167,7 +168,7 @@ namespace bmstu {
                 }
                 return result;
             } else {
-                throw std::logic_error("Wrong number of rows or columns!");
+                throw std::out_of_range("Wrong number of rows or columns!");
             }
         }
 
@@ -217,16 +218,29 @@ namespace bmstu {
                 throw std::logic_error("The determinant of the matrix is 0. The reversed matrix does not exist!");
             } else {
                 matrix<double> result(rows_, columns_);
-                double det = this->det();
-                det = 1/det;
+                matrix<double> adj = this->adj();
+                double det = 1/(this->det());
+
                 for (size_t i = 0; i < rows_; ++i) {
                     for (size_t j = 0; j < columns_; ++j) {
-                        result(i,j) = static_cast<double>((this->adj())(i,j))*det;
+                        result(i,j) = adj(i,j)*det;
                     }
                 }
                 return result;
             }
         }
+
+//        size_t r_count() {
+//            return rows_;
+//        }
+//
+//        size_t c_count() {
+//            return columns_;
+//        }
+//
+//        size_t size() {
+//            return rows_*columns_;
+//        }
 
     private:
         void permute(std::vector<size_t> &a, size_t pos, T &value, int &sign) {
